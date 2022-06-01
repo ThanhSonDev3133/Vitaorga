@@ -2,34 +2,48 @@ import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./index.css";
 import logo from "../../assets/img/logoVitaorga.png";
+import { useDispatch } from "react-redux";
+import isEmpty from "validator/lib/isEmpty";
 export default function Login() {
-  const [userLogin, setuserLogin] = useState({ userName: "", passWord: "" });
+  const regex = /^((0[3|8|9|7|5])+([0-9]{8}))|((84[3|8|9|7|5])+([0-9]{8}))$/;
+  const [userLogin, setuserLogin] = useState({
+    hoTen: "",
+    soDienThoai: "",
+    email: "",
+    diaChi: "",
+  });
+  const [validationMsg, setValidationMsg] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const validateAll = (e) => {
+    const msg = {};
+    if (isEmpty(userLogin.hoTen)) {
+      msg.hoTen = "Vui lòng nhập họ tên!";
+    }
 
+    if (isEmpty(userLogin.soDienThoai)) {
+      msg.soDienThoai = "Vui lòng nhập số điện thoại!";
+    } else if (!regex.test(userLogin.soDienThoai)) {
+      msg.soDienThoai = "Số điện thoại không đúng định dạng!";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
   const handleChange = (event) => {
     const { name, value } = event.target;
     setuserLogin({
       ...userLogin,
       [name]: value,
     });
-    console.log("userLogin", userLogin);
   };
   const handleLogin = (event) => {
     event.preventDefault();
-    if (
-      userLogin.userName === "thanhson" &&
-      userLogin.passWord === "thanhson123"
-    ) {
-      alert("Đăng nhập thành công");
-      navigate("/");
-      localStorage.setItem("userLogin", JSON.stringify(userLogin));
-      window.location.reload();
-    } else {
-      alert("Đăng nhập không thành công");
-      return;
-    }
+    const isValid = validateAll();
+    if (!isValid) return;
+    dispatch({type: 'LOGINAPI', form: userLogin});
   };
-
   return (
     <section className="form-sign-in-up">
       <div className="img-logo">
@@ -41,32 +55,36 @@ export default function Login() {
             <span>Xin mời Đăng Nhập!</span>
           </div>
           <div className="form-group">
-            <label htmlFor="sign-in-username">Tên Đăng Nhập</label>
+            <label htmlFor="sign-in-username">Họ Tên</label>
             <div className="form-input">
               <i class="fa fa-user"></i>
               <input
                 type="text"
-                name="userName"
+                name="hoTen"
+                id="hoTen"
                 onChange={handleChange}
-                value={userLogin.userName}
+                value={userLogin.hoTen}
                 className="form-control"
-                placeholder="Nhập tên đăng nhập"
+                placeholder="Nhập họ tên"
               />
             </div>
+            <p className="text-danger text-left">{validationMsg.hoTen}</p>
           </div>
           <div className="form-group">
-            <label htmlFor="sign-in-pass">Mật Khẩu</label>
+            <label htmlFor="sign-in-pass">Số điện thoại</label>
             <div className="form-input">
               <i class="fa fa-lock"></i>
               <input
-                name="passWord"
-                type="password"
+                name="soDienThoai"
+                type="text"
+                id="soDienThoai"
                 onChange={handleChange}
-                value={userLogin.passWord}
+                value={userLogin.soDienThoai}
                 className="form-control"
-                placeHolder="Nhập mật khẩu"
+                placeHolder="Nhập số điện thoại"
               />
             </div>
+            <p className="text-danger text-left">{validationMsg.soDienThoai}</p>
           </div>
           <div className="remember-login">
             <div className="remember">
@@ -82,7 +100,7 @@ export default function Login() {
             Đăng nhập
           </button>
           <div className="mt-4 form-signup-link">
-            <NavLink to="/signup" className='nav-link-signup'>
+            <NavLink to="/signup" className="nav-link-signup">
               Chưa Có Tài Khoản? <span>Đăng Kí</span>
             </NavLink>
           </div>

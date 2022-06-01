@@ -7,6 +7,7 @@ import Profile from "./pages/Profile";
 import Search from "./pages/Search";
 import Search2 from "./pages/Search2";
 import Admin from "./pages/Admin";
+import CompleteProfile from "./pages/CompleteProfile";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route exact path="/search" element={<Search />} />
           <Route exact path="/search2" element={<Search2 />} />
           <Route exact path="/admin" element={<Admin />} />
+          <Route exact path="/completeprofile" element={<CompleteProfile />} />
           {/* <Route exact path="/" element={<Home />} /> */}
           <Route exact path="*" element={<PageNotFound />} />
         </Routes>

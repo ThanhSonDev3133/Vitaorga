@@ -11,6 +11,7 @@ export function* rootSaga() {
     FollowAction.followDeleteTaskAPI(),
     FollowAction.followAddTaskAPI(),
     FollowAction.followCheckDoneTaskAPI(),
-    FollowAction.followRejectTaskAPI()
+    FollowAction.followRejectTaskAPI(),
+    FollowAction.followLoginSaga(),
   ])
 }

@@ -44,7 +44,6 @@ export default function Admin() {
   const handleAddUser = () => {
     dispatch(createAction(ADDUSER, true));
   };
-
   return (
     <body>
       <input type="checkbox" name="" id="nav-toggle" />
@@ -144,7 +143,7 @@ export default function Admin() {
                           <tbody>
                             <tr>
                               <td>1</td>
-                              <td>FrontEnd</td>
+                              <td >FrontEnd</td>
                               <td>05/05/2022</td>
                               <td>
                                 <span className="status purple"></span>

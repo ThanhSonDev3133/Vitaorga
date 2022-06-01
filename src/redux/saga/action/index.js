@@ -1,8 +1,11 @@
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { call, put } from "redux-saga/effects";
 import { takeEvery, takeLatest } from "redux-saga/effects";
+import Swal from "sweetalert2";
 import { toDoListService } from "../../../services/TodoListService";
 import { STATUSCODE } from "../../../util/contanst/settingSystem";
+import { LOGIN } from "../../constant";
+
 export function* getTaskAPISaga(action) {
   // yield delay(3000);
   //yield take("getTaskAPIAction"); //theo dõi action -> xem action nào dispatch trùng với type trong take thì mới làm các công việc bên dưới
@@ -14,6 +17,48 @@ export function* getTaskAPISaga(action) {
     type: "GETTASK",
     payload: data,
   });
+}
+function* loginSaga(action) {
+  const { form } = action;
+  try {
+    const { data, status } = yield call(() => {
+      return toDoListService.loginAPISaga(form);
+    });
+    if (data.isSuccess === true) {
+      yield put({
+        type: LOGIN,
+        form: form,
+      });
+      Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+        },
+        buttonsStyling: false,
+      }).fire({
+        title: "",
+        html: `<span style="color: #27ae60">Thực hiện thành công</span>`,
+        icon: "success",
+        confirmButtonText: "Xác Nhận",
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } else {
+      Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-danger",
+        },
+        buttonsStyling: false,
+      }).fire({
+        title: "",
+        html: `<span style="color:red">${data.message}</span>`,
+        icon: "error",
+        confirmButtonText: "Xác Nhận",
+      });
+    }
+  } catch (err) {
+    console.log("err", err);
+  }
 }
 function* deleteTaskAPISaga(action) {
   const { taskName } = action;
@@ -62,7 +107,7 @@ function* checkDoneTaskAPISaga(action) {
 }
 function* rejectTaskAPISaga(action) {
   const { taskName } = action;
-  console.log('taskname2', taskName);
+  console.log("taskname2", taskName);
   try {
     const { data, status } = yield call(() => {
       return toDoListService.rejectTaskAPI(taskName);
@@ -90,4 +135,7 @@ export function* followCheckDoneTaskAPI() {
 }
 export function* followRejectTaskAPI() {
   yield takeEvery("rejectTaskAction", rejectTaskAPISaga);
+}
+export function* followLoginSaga() {
+  yield takeLatest("LOGINAPI", loginSaga);
 }
